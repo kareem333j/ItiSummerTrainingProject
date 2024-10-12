@@ -1,0 +1,116 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %} Users {% endblock title %}
+{% block style %}
+    <style>
+        
+    </style>
+{% endblock style %}
+{% block content %}
+<div class="w-100 pt-5" style="min-height: 90vh;">
+    {% for msg in messages %}
+    <div class="w-100">
+        <div class="alert alert-success alert02" role="alert">
+            {{msg}}
+        </div>
+    </div>
+    <script>
+        const alert02 = document.querySelector('.alert02');
+        setTimeout(()=>{
+            alert02.remove();
+        }, 5000);
+    </script>
+    {% endfor %}
+    <div class="row d-flex justify-content-center align-items-center mb-3">
+        <h3 class="text-start text-light fw-bold col-lg-6" style="font-size: 2.2em;"> Users List : </h3>
+        <div class="col-lg-6">
+            <div class="d-flex" role="search">
+                <input class="form-control me-2 search" type="search" placeholder="🔎 Search User" aria-label="Search">
+            </div>
+        </div>
+    </div>
+    <div class="w-100 d-flex justify-content-center p-0 align-items-center">
+        <table class="table1 w-100">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Full name</th>
+                    <th>Staff user</th>
+                    <th>Data join</th>
+                    <th>Last login</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr class="table-row">
+                    <td>{{user.id}}</td>
+                    <td>@{{user.username}}</td>
+                    <td>{{user.first_name}}</td>
+                    <td>{{user.is_superuser}}</td>
+                    <td>{{user.date_joined}}</td>
+                    <td>{{user.last_login}}</td>
+                    <td><a class="btn btn-outline-info d-flex justify-content-center align-items-center gap-2" href="{% url 'profile' user.id %}">show <i style="font-size: 0.8em;" class="fa-solid fa-angle-right pt-1"></i></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+<script>
+    let table_body = document.querySelector('table tbody');
+    let search = document.querySelector('.search');
+
+    search.addEventListener('input', (e)=>{
+        var text = e.target.value;
+        let text_without_spacing = text.replace(/\s+/g, '');
+        var value = text;
+    
+        if (text_without_spacing === '') {
+            value = null;
+        }
+        const url = `/users/search/${value}`;
+    
+        fetch(url)
+        .then((response)=>{
+            return response.json();
+        })
+        .then((data)=>{
+            handel_users(data.users);
+        })
+        .catch((err)=>{
+            console.log(err);
+        });
+    });
+
+    const handel_users = (data)=>{
+        let table_rows = document.querySelectorAll('table .table-row');
+        [...table_rows].map((e)=>{
+            e.remove();
+        });
+
+        for(let i=0; i<data.length; i++){
+            let tr = document.createElement('tr');
+            tr.className = 'table-row';
+            for(let key in data[i]){
+                let td = document.createElement('td');
+                if(key == 'date_joined' || key == 'last_login'){
+                    td.innerHTML = dateFormatter(data[i][key]);
+                }else{
+                    td.innerHTML = data[i][key];
+                }
+                tr.appendChild(td);
+            }
+
+            let td = document.createElement('td');
+            td.innerHTML = `<a class="btn btn-outline-info d-flex justify-content-center align-items-center gap-2" href="/profile/${data[i].id}">show <i style="font-size: 0.8em;" class="fa-solid fa-angle-right pt-1"></i></a>`;
+            tr.appendChild(td);
+            table_body.appendChild(tr);
+        }
+    };
+
+</script>
+{% endblock content %}

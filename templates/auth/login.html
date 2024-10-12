@@ -1,0 +1,60 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %} Login {% endblock title %}
+{% block cssLinks %}
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock cssLinks %}
+{% block style %}
+    <style>
+        
+    </style>
+{% endblock style %}
+{% block content %}
+    {% for msg in messages %}
+    <div class="alert alert02 alert-danger w-100" role="alert">
+        {{msg}}
+    </div>
+    <script>
+        const alert02 = document.querySelector('.alert02');
+        setTimeout(()=>{
+            alert02.remove();
+        }, 5000);
+    </script>
+    {% endfor %}
+    <div class="main-sec auth w-100 row overflow-hidden mt-5 pt-5 pb-5">
+        <h3 style="font-size: 2.5em;" class="w-100 text-light fw-bold text-center pb-5">Login</h3>
+        <form class="login-form" method="post">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" id="username" required>
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" id="password" required>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="show" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Show password</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+    <div class="w-100 text-center mt-3">
+        <p style="font-size: 1.2em;" class="text-light">you don't have an account? <a href="{% url 'register' %}">Register</a> </p>
+    </div>
+
+    <script>
+        let pass = document.querySelector('.login-form input[name="password"]');
+        let show = document.querySelector('.login-form input[name="show"]');
+
+        show.addEventListener('click', ()=>{
+            if(show.checked == true){
+                pass.type = 'text';
+            }else{
+                pass.type = 'password';
+            }
+        })
+    </script>
+{% endblock content %}

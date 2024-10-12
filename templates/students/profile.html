@@ -1,0 +1,93 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %} Profile {% endblock title %}
+{% block style %}
+    <style>
+        
+    </style>
+{% endblock style %}
+{% block content %}
+<div class="main-div mb-5 profile w-100 d-flex justify-content-center flex-column align-items-center">
+    <h3 class="w-100 text-light text-center mb-5" style="font-size: 2.2em;">
+        {% if request.user.username == profile.username %}
+        My
+        {% else %}
+        <span style="color: #ffffffaf;">"{{profile.first_name}}"</span>
+        {% endif %}
+        Profile</h3>
+    <div class="w-100 mb-3 d-flex justify-content-center align-items-center gap-3 flex-column">
+        <div class="w-100 d-flex justify-content-center align-items-center gap-3">
+            <div class="avatar" id="avatar-profile"  data-bs-toggle="dropdown" aria-expanded="false">
+            </div>
+            <div class="user-data">
+                <div class="user-main-info">
+                    <h4 class="p-0 m-0">{{profile.first_name}}</h4>
+                    <p class="p-0 m-0">{{profile.email}}</p>
+                    <p class="p-0 m-0">@{{profile.username}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="info d-flex justify-content-center align-items-center gap-3 flex-column">
+            <div class="info-item d-flex gap-2">
+                <span class="title">ID </span>
+                <span class="value">{{profile.id}}</span>
+            </div>
+            <div class="info-item d-flex gap-2">
+                <span class="title">Data join </span>
+                <span class="value">{{profile.date_joined}}</span>
+            </div>
+            <div class="info-item d-flex gap-2">
+                <span class="title">Last login </span>
+                <span class="value">{{profile.last_login}}</span>
+            </div>
+        </div>
+    </div>
+    {% if request.user.username == profile.username %}
+    <div class="actions">
+        <a class="edit-btn1 btn btn-primary" href="{% url 'profile.edit' profile.id %}"> Edit profile</a>
+        <a class="edit-btn1 btn btn-dark" href="{% url 'change_password' %}"> Change Pssword</a>
+    </div>
+    {% endif %}
+</div>
+<div class="main-div mb-5 books w-100 d-flex justify-content-center flex-column align-items-center">
+    <h3 class="w-100 text-light text-center mb-5" style="font-size: 2.2em;">Borrowed Books</h3>
+    {% if books.count == 0 %}
+    <p class="w-100 text-center text-danger" style="font-size: 1.3em;">Not found any borrowed books :)</p>
+    {% else %}
+    <div class="w-100 d-flex justify-content-center p-0 align-items-center overflow-hidden">
+        
+        <table class="table1 w-100">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Book</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Borrowed date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{book.book.id}}</td>
+                    <td><img width="50px" src="{{book.book.image_url}}" alt="img"></td>
+                    <td>{{book.book.title}}</td>
+                    <td>{{book.book.category}}</td>
+                    <td>{{book.borrowed_dt}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    if(document.getElementById('avatar-profile')){
+        let avatar_profile = document.getElementById('avatar-profile');
+        let user_full_name = '{{profile.first_name}}'
+        avatar_profile.setAttribute('data-user', user_full_name[0].toUpperCase());
+    }
+</script>
+{% endblock content %}

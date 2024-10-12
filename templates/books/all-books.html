@@ -1,0 +1,170 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %} Books {% endblock title %}
+{% block style %}
+    <style>
+        
+    </style>
+{% endblock style %}
+{% block content %}
+<div class="w-100 pt-5" style="min-height: 90vh;">
+    {% for msg in messages %}
+    <div class="w-100">
+        <div class="alert alert-success alert02" role="alert">
+            {{msg}}
+        </div>
+    </div>
+    <script>
+        const alert02 = document.querySelector('.alert02');
+        setTimeout(()=>{
+            alert02.remove();
+        }, 5000);
+    </script>
+    {% endfor %}
+    <div class="row d-flex justify-content-center align-items-center mb-3">
+        <h3 class="text-start text-light fw-bold col-lg-6" style="font-size: 2.2em;"> Main Book List : </h3>
+        <div class="col-lg-6">
+            {% if books.count > 0 %}
+            <div class="d-flex" role="search">
+                <input class="form-control me-2 search" type="search" placeholder="🔎 Search Book" aria-label="Search">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% if books.count == 0 %}
+    <p class="w-100 text-center text-danger d-flex justify-content-center align-items-center" style="font-size: 1.3em;min-height: 30vh;">No book has been downloaded yet :)</p>
+    {% else %}
+    <div class="w-100 d-flex justify-content-center p-0 align-items-center">
+        <table class="table1 w-100">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Book</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    {% if request.user.is_superuser %}
+                    <th></th>
+                    {% else %}
+                    <th></th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                {% if book.stock <= 0 %}
+                <tr class="table-row zero">
+                {% else %}
+                <tr class="table-row">
+                {% endif %}
+                    <td>{{book.id}}</td>
+                    <td><img width="50px" src="{{book.image_url}}" alt="img"></td>
+                    <td>{{book.title}}</td>
+                    <td>@{{book.author}}</td>
+                    <td>{{book.description}}</td>
+                    <td>{{book.category}}</td>
+                    <td>x{{book.stock}}</td>
+                    {% if request.user.is_superuser %}
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a class="btn btn-primary" href="{% url 'books.edit' book.id %}"><i class="fa-solid fa-pen-to-square"></i></a>
+                            <button data-book="{{book.id}}" class="btn btn-danger delete-book-btn" href="#"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </td>
+                    {% else %}
+                    <td>
+                        <div class="d-flex gap-1">
+                            {% if book.borrowed == True %}
+                            <button style="width: 80px;" data-book="{{book.id}}" class="btn btn-outline-info return-btn">return</button>
+                            {% else %}
+                                {% if book.stock > 0 %}
+                                <button style="width: 80px;" data-book="{{book.id}}" class="btn btn-outline-info borrow-btn">borrow</button>
+                                {% else %}
+                                <button style="width: 80px;cursor:no-drop" class="btn btn-secondary">finished</button>
+                                {% endif %}
+                            {% endif %}
+                            <a href="{% url 'books.book' book.id %}" class="btn btn-info"><i class="fa-solid fa-circle-info"></i></a>
+                        </div>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    <div class="d-flex gap-1">
+        <a href="{% url 'books.borrowed' %}" class="btn btn-primary mt-4 ms-1"><i class="fa-solid fa-arrow-left"></i> Borrowed books</a>
+        {% if request.user.is_superuser %}
+        <a href="{% url 'books.add' %}" class="btn btn-success mt-4 ms-1">Add <i class="fa-solid fa-plus"></i></a>
+        {% endif %}
+    </div>
+</div>
+<script>
+    function actions(){
+        [...deleteBtn].map((btn)=>{
+            btn.addEventListener('click', (e)=>{
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You want to delete this book!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    book_id = e.target.getAttribute("data-book");
+                    console.log(`/books/${book_id}/delete`);
+                    window.location.replace(`/books/${book_id}/delete`)
+                }
+                });
+            });
+        });
+        
+        
+        [...borrowBtn].map((btn)=>{
+            btn.addEventListener('click', (e)=>{
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You want to borrow this book!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, borrow it!"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    book_id = e.target.getAttribute("data-book");
+                    window.location.replace(`/books/${book_id}/borrow`)
+                }
+                });
+            });
+        });
+        
+        [...returnBtn].map((btn)=>{
+            btn.addEventListener('click', (e)=>{
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You want to return this book!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, return it!"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    book_id = e.target.getAttribute("data-book");
+                    window.location.replace(`/books/${book_id}/return`)
+                }
+                });
+            });
+        });
+    }
+    
+</script>
+<script src="{% static 'js/all-books.js' %}"></script>
+{% endblock content %}

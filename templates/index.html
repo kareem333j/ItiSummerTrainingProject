@@ -1,0 +1,36 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %} Start {% endblock title %}
+{% block style %}
+    <style>
+        .home-sec .image{
+            background-image: url("{% static 'images/back1.jpg' %}");
+        }
+    </style>
+{% endblock style %}
+{% block content %}
+    <div class="main-sec home-sec w-100 row overflow-hidden mt-5 mb-4">
+        <div class="col-lg-6">
+            <div class="text">
+                "Welcome to the Online Library
+                Management System!
+                This system allows you to access a wide
+                range of e-books that you can easily
+                borrow. Whether you're a student looking
+                to borrow books or a regular user
+                ,searching for available books to read
+                the system provides a smooth and
+                convenien
+            </div>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'main' %}" class="main-btn1 mt-5 mb-2">Home <i class="fa-solid fa-arrow-right pt-1"></i></a>
+            {% else %}
+            <a href="{% url 'login' %}" class="main-btn1 mt-5 mb-2">Login <i class="fa-solid fa-arrow-right pt-1"></i></a>
+            {% endif %}
+        </div>
+        <div class="col-lg-6 overflow-hidden">
+            <div class="w-100 image"></div>
+        </div>
+    </div>
+{% endblock content %}

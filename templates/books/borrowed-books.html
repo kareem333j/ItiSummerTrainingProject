@@ -1,0 +1,88 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %} Borrowed Books {% endblock title %}
+{% block style %}
+    <style>
+        
+    </style>
+{% endblock style %}
+{% block content %}
+<div class="w-100 pt-5" style="min-height: 90vh;">
+    <div class="row d-flex justify-content-center align-items-center mb-3">
+        <h3 class="text-start text-light fw-bold col-lg-6" style="font-size: 2.2em;">{% if request.user.is_superuser %}All{% endif %} Borrowed Books : </h3>
+        <div class="col-lg-6">
+            {% if books.count > 0 %}
+            <div class="d-flex" role="search">
+                <input class="form-control me-2 search" type="search" placeholder="🔎 Search Book" aria-label="Search">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% if books.count == 0 %}
+    <p class="w-100 text-center text-danger d-flex justify-content-center align-items-center" style="font-size: 1.3em;min-height: 30vh;">You haven't borrowed any book yet. :)</p>
+    {% else %}
+    <div class="w-100 d-flex justify-content-center p-0 align-items-center">
+        <table class="table1 w-100">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Book</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Borrowed date</th>
+                    {% if request.user.is_superuser %}
+                    <th>Borrower User</th>
+                    {% else %}
+                    <th>Return</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr class="table-row">
+                    <td>{{book.book.id}}</td>
+                    <td><img width="50px" src="{{book.book.image_url}}" alt="img"></td>
+                    <td>{{book.book.title}}</td>
+                    <td>{{book.book.category}}</td>
+                    <td>{{book.borrowed_dt}}</td>
+                    {% if request.user.is_superuser %}
+                    <td><a href="{% url 'profile' book.user.id %}" class="text-light text-decoration-none">@{{book.user.username}}</a></td>
+                    {% else %}
+                    <td><button style="width: 80px;" data-book="{{book.book.id}}" class="btn btn-outline-info return-btn">return</button></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    <a href="{% url 'books' %}" class="btn btn-primary mt-4 ms-1"><i class="fa-solid fa-arrow-left"></i> All books</a>
+</div>
+<script>
+    function actions(){
+        let returnBtn = document.querySelectorAll('.return-btn');
+
+        [...returnBtn].map((btn)=>{
+            btn.addEventListener('click', (e)=>{
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You want to return this book!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, return it!"
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    book_id = e.target.getAttribute("data-book");
+                    window.location.replace(`/books/${book_id}/return`)
+                    //window.location.reload();
+                }
+                });
+            });
+        });
+    }
+</script>
+<script src="{% static 'js/borrowed.js' %}"></script>
+{% endblock content %}

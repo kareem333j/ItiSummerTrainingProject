@@ -1,0 +1,81 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %} Home {% endblock title %}
+{% block style %}
+    <style>
+        
+    </style>
+{% endblock style %}
+{% block content %}
+    {% for msg in messages %}
+    <div class="alert alert02 alert-success d-flex align-items-center w-100" style="position: absolute;top: 0;left:0;height:40px" role="alert">
+        <svg width="20" class="bi flex-shrink-0 me-2" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+        <div>
+            {{msg}}
+        </div>
+    </div>
+    <script>
+        const alert02 = document.querySelector('.alert02');
+        setTimeout(()=>{
+            alert02.remove();
+        }, 2000);
+    </script>
+    {% endfor %}
+    <div class="base-sec pb-5 w-100 overflow-hidden mt-5 d-flex gap-4 justify-content-center align-items-center flex-wrap">
+        <div class="main-div d-flex flex-column justify-content-between">
+            <div class="w-100">
+                <h3 class="title">Main Book List</h3>
+                <p class="description">
+                    Display all the books in
+                    library for borrowin
+                </p>
+            </div>
+            <a href="{% url 'books' %}" class="main-btn2">
+                <span>GO</span>
+                <span class="btn-icon"><i class="fa-solid fa-arrow-right pt-1"></i></span>
+            </a>
+        </div>
+        <div class="main-div d-flex flex-column justify-content-between">
+            <div class="w-100">
+                <h3 class="title"> Borrowed Books</h3>
+                <p class="description">
+                    display the list of books you
+                    have borrowed, along with
+                    the borrowing dates and the
+                    due return date.
+                </p>
+            </div>
+            <a href="{% url 'books.borrowed' %}" class="main-btn2">
+                <span>GO</span>
+                <span class="btn-icon"><i class="fa-solid fa-arrow-right pt-1"></i></span>
+            </a>
+        </div>
+        {% if request.user.is_superuser %}
+        <div class="main-div d-flex flex-column justify-content-between">
+            <div class="w-100">
+                <h3 class="title"> User </h3>
+                <p class="description">
+                    View all users and know all their data
+                </p>
+            </div>
+            <a href="{% url 'users' %}" class="main-btn2">
+                <span>GO</span>
+                <span class="btn-icon"><i class="fa-solid fa-arrow-right pt-1"></i></span>
+            </a>
+        </div>
+        <div class="main-div d-flex flex-column justify-content-between">
+            <div class="w-100">
+                <h3 class="title"> Categories </h3>
+                <p class="description">
+                    View all Categories and Edit, Delete, Update
+                </p>
+            </div>
+            <a href="{% url 'categories' %}" class="main-btn2">
+                <span>GO</span>
+                <span class="btn-icon"><i class="fa-solid fa-arrow-right pt-1"></i></span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+{% endblock content %}

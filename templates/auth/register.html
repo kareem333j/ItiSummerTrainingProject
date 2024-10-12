@@ -1,0 +1,49 @@
+{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block title %} Sign up {% endblock title %}
+{% block cssLinks %}
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock cssLinks %}
+{% block style %}
+    <style>
+        
+    </style>
+{% endblock style %}
+{% block content %}
+    <div class="main-sec auth w-100 row overflow-hidden mt-5 pt-5 pb-5">
+        <h3 style="font-size: 2.5em;" class="w-100 text-light fw-bold text-center pb-5">Sign up</h3>
+        <form class="login-form" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-4">
+                {% if field.label == "First name" %}
+                <label for="id_{{ field.name }}" class="form-label">Full name</label>
+
+                {% else %}
+                <label for="id_{{ field.name }}" class="form-label">{{ field.label }}</label>
+                {% endif %}
+                {{ field }}
+                {% for error in field.errors %}
+                <div class="alert alert-danger">
+                    {{ error|escape }}
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Sign up</button>
+        </form>
+        
+    </div>
+    <div class="w-100 text-center mt-3">
+        <p style="font-size: 1.2em;" class="text-light">If you already have an account <a href="{% url 'login' %}">login</a> </p>
+    </div>
+
+    <script>
+        const form = document.querySelector('.login-form');
+        for(let i=1; i < [...form].length-1; i++){
+            form.children[i].children[1].classList.add('form-control');
+        }
+    </script>
+{% endblock content %}
